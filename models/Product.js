@@ -10,16 +10,19 @@ class Product extends Model { };
 Product.init(
   {
     // define columns
+    // pk, auto increment
     id: {
       type: DataTypes.INTEGER,
       allowNull: false,
       primaryKey: true,
       autoIncrement: true
     },
+    // product name as a string
     product_name: {
       type: DataTypes.STRING,
       allowNull: false
     },
+    // price as a decimal with two decimal places
     price: {
       type: DataTypes.DECIMAL(10, 2),
       allowNull: false,
@@ -27,6 +30,7 @@ Product.init(
         isDecimal: true,
       },
     },
+    // stock as int since it's not possible to have a part of a product
     stock: {
       type: DataTypes.INTEGER,
       allowNull: false,
@@ -35,6 +39,7 @@ Product.init(
         isNumeric: true,
       }
     },
+    // fk to reference id of Category from model
     category_id: {
       type: DataTypes.INTEGER,
       references: {
