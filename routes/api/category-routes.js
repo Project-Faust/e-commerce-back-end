@@ -19,8 +19,9 @@ router.get('/:id', async (req, res) => {
   // be sure to include its associated Products
   try {
     const categoryDataID = await Category.findByPk(req.params.id, { include: [{ model: Product }] });
+    // return 404 if category not found
     if (!categoryDataID) {
-      res.status(404).json({ message: `No category found with ID: ${req.params.id}.` });
+      return res.status(404).json({ error: 'Category not found.' });
     }
     res.status(200).json(categoryDataID);
   } catch (error) {
@@ -31,21 +32,27 @@ router.get('/:id', async (req, res) => {
 router.post('/', async (req, res) => {
   // create a new category
   try {
-    const categoryNew = await Category.create(req.body);
-    res.status(200).json(categoryNew);
+    await Category.create(req.body);
+    res.status(200).json({ message: 'Category created successfully.' });
   } catch (error) {
     res.status(500).json(error);
   }
 });
 
 router.put('/:id', async (req, res) => {
-  // update a category by its `id` value
   try {
-    const categoryUpdate = await Category.update(req.body, {
-      where: {
-        id: req.params.id
-      }
-    });
+    // update a category by its `id` value
+    const category = await Category.findByPk(req.params.id);
+    // return 404 if category not found
+    if (!category) {
+      return res.status(404).json({ error: 'Category not found.' });
+    }
+    // Update the category' name with response body
+    category.category_name = req.body.category_name;
+    // save updated category name
+    await category.save();
+    // send back updated category
+    res.status(200).json({ message: 'Category updated successfully.' });
   } catch (error) {
     res.status(500).json(error);
   }
@@ -54,15 +61,22 @@ router.put('/:id', async (req, res) => {
 router.delete('/:id', async (req, res) => {
   // delete a category by its `id` value
   try {
-    const categoryDelete = await Category.destroy({
+    // find target category
+    const categoryDelete = await Category.findAll({
       where: {
         id: req.params.id
       }
-    })
+    });
+    // return 404 if category not found
+    if (!categoryDelete) {
+      return res.status(404).json({ error: 'Category not found' });
+    }
+    // destroy category
+    await Category.destroy();
+    res.status(200).json({ message: 'Category deleted successfully.' })
   } catch (error) {
     res.status(500).json(error);
   }
-
 });
 
 module.exports = router;
