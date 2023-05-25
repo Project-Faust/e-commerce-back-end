@@ -66,7 +66,7 @@ router.delete('/:id', async (req, res) => {
     const categoryDelete = await Category.findByPk(categoryId);
     // return 404 if category not found
     if (!categoryDelete) {
-      return res.status(404).json({ error: 'Category not found' });
+      return res.status(404).json({ error: 'Category not found.' });
     }
     // destroy category
     await Category.destroy({
